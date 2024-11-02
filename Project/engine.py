@@ -30,6 +30,7 @@ class Engine:
         self.anchoTablero = '';
         self.altoTablero = '';
         self.tableroVacio = True; #este pasas a ser false en paint table al crear el tablero
+        self.posicionesAcertadas = [];
         #compobador si ha fallado o no el player 1 o 2
 
     #Funcion que s encarga de dar el mensaje de bienvenida
@@ -62,7 +63,7 @@ class Engine:
         nrEmoji = int(ancho * alto) / 2;
         self.randomEmoji(nrEmoji)
         print(self.emojiMix)
-        self.paintTable(ancho, alto)
+        self.paintTable(ancho, alto)#hay que quitar esto
         self.start()
 
 
@@ -70,31 +71,27 @@ class Engine:
     #En un futuro, cuando un usuario acerte mostrara la con todos los valores acertados.
     def paintTable(self, ancho, alto):
         index = 0
-        iAltura = 0
-
         if self.tableroVacio == True:
-            self.anchoTablero = ancho;
-            self.altoTablero = alto;
-            for i in range(alto):
-                for h in range(ancho):
+            self.anchoTablero = ancho
+            self.altoTablero = alto
+        
+        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+        for i in range(alto):
+            for h in range(ancho):
+                current_index = i * self.altoTablero + h
+                if current_index in self.posicionesAcertadas:
+                    # Si la posición ya ha sido acertada, muestra el emoji
+                    print(self.emojiMix[current_index][1], end=' ')
+                else:
+                    # Si no ha sido acertada, muestra el cuadrado
                     print("□ ", end=' ')
-                    #print(self.emojiMix[index][1], end=' ') 
-                    index += 1
-                print()
-            self.tableroVacio = False;
-        #ESTO HAY QUE METERLO EN OTRO LADO
-        '''elif self.tableroVacio == False:
-            for i in range(self.altoTablero):
-                for h in range(self.anchoTablero):
-                    current_index = i * self.anchoTablero + h
-                    if current_index == ancho or current_index == alto:
-                        print(self.emojiMix[current_index][1], end=' ')
-                    #print(self.emojiMix[index][1], end=' ') 
-                    print("□ ", end=' ')
-                    index += 1
-                print()'''
+                index += 1
+            print()
+        
+        self.tableroVacio = False
             
     def start(self):
+        self.paintTable(self.anchoTablero, self.altoTablero)
         while self.finalizado != True:
             if (self.player1 == True):
                 #Primera elección
@@ -107,14 +104,13 @@ class Engine:
                 guess1_x = int(parts[0]) - 1 
                 guess1_y = int(parts[1]) - 1
                 
-                #Ej. 1x1 lo que hace es, 0 * 5 + 0 = 0
-                #Entonces elige la posicion 0 de la "Matriz"
                 guess1_index = guess1_y * self.anchoTablero + guess1_x
                 
+                # Mostrar tablero con la primera elección
                 for i in range(self.altoTablero):
                     for h in range(self.anchoTablero):
                         current_index = i * self.anchoTablero + h
-                        if current_index == guess1_index:
+                        if current_index in self.posicionesAcertadas or current_index == guess1_index:
                             print(self.emojiMix[current_index][1], end=' ')
                         else:
                             print("□ ", end=' ')
@@ -128,41 +124,35 @@ class Engine:
                 guess2_x = int(parts[0]) - 1
                 guess2_y = int(parts[1]) - 1
                 
-                # Calculamos el índice de la segunda elección
                 guess2_index = guess2_y * self.anchoTablero + guess2_x
                 
+                # Mostrar tablero con ambas elecciones
                 for i in range(self.altoTablero):
                     for h in range(self.anchoTablero):
                         current_index = i * self.anchoTablero + h
-                        #La comporbacion del guess1 y la comprobacion del guess2
-                        if current_index == guess1_index or current_index == guess2_index:
+                        if current_index in self.posicionesAcertadas or current_index == guess1_index or current_index == guess2_index:
                             print(self.emojiMix[current_index][1], end=' ')
                         else:
                             print("□ ", end=' ')
                     print()
 
-                #comprobar la KEY
-                #print(self.emojiMix[guess1_index][0], " Y " ,self.emojiMix[guess2_index][0])
-            #Cambio de turno
             elif self.player2 == True:
                 #Primera elección
                 print("\nA continuación sera el turno de Player 2")
                 print('\nPLAYER 2 - 1º GUESS')
                 print("Recuerda introducir la respuesta en formato 'ancho x altura'. Ejemplo 3x3")
-                self.player1Guess = input('')
-                parts = self.player1Guess.split('x')
-                #Restamos menos uno para ajustarlo al array
+                self.player2Guess = input('')  # Corregido: era player1Guess
+                parts = self.player2Guess.split('x')
                 guess1_x = int(parts[0]) - 1 
                 guess1_y = int(parts[1]) - 1
                 
-                #Ej. 1x1 lo que hace es, 0 * 5 + 0 = 0
-                #Entonces elige la posicion 0 de la "Matriz"
                 guess1_index = guess1_y * self.anchoTablero + guess1_x
                 
+                # Mostrar tablero con la primera elección
                 for i in range(self.altoTablero):
                     for h in range(self.anchoTablero):
                         current_index = i * self.anchoTablero + h
-                        if current_index == guess1_index:
+                        if current_index in self.posicionesAcertadas or current_index == guess1_index:
                             print(self.emojiMix[current_index][1], end=' ')
                         else:
                             print("□ ", end=' ')
@@ -171,37 +161,34 @@ class Engine:
                 # Segunda elección
                 print('\nPLAYER 2 - 2º GUESS')
                 print("Recuerda introducir la respuesta en formato 'ancho x altura'. Ejemplo 3x3")
-                self.player1Guess = input('')
-                parts = self.player1Guess.split('x')
+                self.player2Guess = input('')  # Corregido: era player1Guess
+                parts = self.player2Guess.split('x')
                 guess2_x = int(parts[0]) - 1
                 guess2_y = int(parts[1]) - 1
                 
-                # Calculamos el índice de la segunda elección
                 guess2_index = guess2_y * self.anchoTablero + guess2_x
                 
+                # Mostrar tablero con ambas elecciones
                 for i in range(self.altoTablero):
                     for h in range(self.anchoTablero):
                         current_index = i * self.anchoTablero + h
-                        #La comporbacion del guess1 y la comprobacion del guess2
-                        if current_index == guess1_index or current_index == guess2_index:
+                        if current_index in self.posicionesAcertadas or current_index == guess1_index or current_index == guess2_index:
                             print(self.emojiMix[current_index][1], end=' ')
                         else:
                             print("□ ", end=' ')
                     print()
 
-                #comprobar la KEY
-                #print(self.emojiMix[guess1_index][0], " Y " ,self.emojiMix[guess2_index][0])
-                #Si la respuesta es correcta imprimimos la tabla
             if self.comprobarRespuesta(self.emojiMix[guess1_index][0], self.emojiMix[guess2_index][0]) == True:
-                for i in range(self.altoTablero):
-                    for h in range(self.anchoTablero):
-                        current_index = i * self.anchoTablero + h
-                        if current_index == guess1_index or current_index == guess2_index:
-                            print(self.emojiMix[current_index][1], end=' ')
-                        #print(self.emojiMix[index][1], end=' ') 
-                        print("□ ", end=' ')
-                        index += 1
-                    print()
+                self.posicionesAcertadas.append(guess1_index)
+                self.posicionesAcertadas.append(guess2_index)
+                self.paintTable(self.anchoTablero, self.altoTablero)  # Mostrar tablero actualizado con las coincidencias
+                self.isFinished()#Veridicamos si el juego ha acabado
+        
+        #Cuando se sale del whiel(osea el juego ha acabado)
+        print("Game is over.\nResults are: ") #En un futuro, siempre que un jugador acierte agregaremos un punto por cada acertado para 
+        #print("Player1: 2 pairs right")
+        #print("Player2: 2 pairs right")
+        #print("Draw")
                 
     
     def comprobarRespuesta(self, guess1, guess2):
@@ -239,3 +226,7 @@ class Engine:
         pair1.extend(pair2);
         #print(pair1)
         self.emojiMix = random.sample(pair1, k=int(number * 2))
+
+    def isFinished(self):
+        if len(self.posicionesAcertadas) == len(self.emojiMix):
+            self.finalizado = True;
