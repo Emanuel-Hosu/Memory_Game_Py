@@ -31,7 +31,8 @@ class Engine:
         self.altoTablero = '';
         self.tableroVacio = True; #este pasas a ser false en paint table al crear el tablero
         self.posicionesAcertadas = [];
-        #compobador si ha fallado o no el player 1 o 2
+        self.scorePlayer1 = 0;
+        self.scorePlayer2 = 0;
 
     #Funcion que s encarga de dar el mensaje de bienvenida
     def welcome(self):
@@ -44,46 +45,42 @@ class Engine:
     def dataTable(self):
         user = input('')
         parts = user.split('x')
-        ancho = int(parts[0])
-        alto = int(parts[1])
+        self.anchoTablero = int(parts[0])
+        self.altoTablero = int(parts[1])
 
-        if (ancho * alto % 2 != 0):
-            while ancho * alto % 2 != 0:
+        #En caso de que el usuario añada un tamaño de tablero incorrecto
+        if (self.anchoTablero * self.altoTablero % 2 != 0):
+            while self.anchoTablero * self.altoTablero % 2 != 0:
                 print('Ha ocurrido un problema, el tablero es impar, vuelve a intentarlo\n')
                 print("Introduce el tamaño del tablero en el formato 'ancho x alto'. Ejemplo: 5x6")
                 print("El tamaño máximo permitido es 5x6")
 
                 user = input('')
                 parts = user.split('x')
-                ancho = int(parts[0])
-                alto = int(parts[1])
+                self.anchoTablero = int(parts[0])
+                self.altoTablero = int(parts[1])
 
-        #Pasamos el numero de emojis que vamos a utilizar
-        print("\nQue el juego comience :D")
-        nrEmoji = int(ancho * alto) / 2;
-        self.randomEmoji(nrEmoji)
-        print(self.emojiMix)
-        self.paintTable(ancho, alto)#hay que quitar esto
+        nrEmoji = int(self.anchoTablero * self.altoTablero) / 2; #El numero de emoji que vamos a utilizar, por ejemplo si es una tabla 2x2 solo se van a utilizar 2 emojis, cada uno con su pareja
+        self.randomEmoji(nrEmoji) #Randomeamos los emojis
+        #print(self.emojiMix) #BORRAR EN UN FUTUOR, solo la utilizo para pruebas
         self.start()
 
 
        
-    #En un futuro, cuando un usuario acerte mostrara la con todos los valores acertados.
-    def paintTable(self, ancho, alto):
+    #Funcion que se encarga de pintar el tablero, tambien cuadno hay una pareja acertada, que esta se comprueba en el metodo comprobarRespuesta(), 
+    #este se encarga de printear las parejas acertadas
+    def paintTable(self):
         index = 0
-        if self.tableroVacio == True:
-            self.anchoTablero = ancho
-            self.altoTablero = alto
-        
-        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-        for i in range(alto):
-            for h in range(ancho):
+
+        print("\n")
+        for i in range(self.altoTablero):
+            for h in range(self.anchoTablero):
                 current_index = i * self.altoTablero + h
                 if current_index in self.posicionesAcertadas:
-                    # Si la posición ya ha sido acertada, muestra el emoji
+                    #Si se encuentra en posicionesAcertadas, este pinta el emoji
                     print(self.emojiMix[current_index][1], end=' ')
                 else:
-                    # Si no ha sido acertada, muestra el cuadrado
+                    #Si no se acierta la respuesta pinta un cuadrado en blanco.
                     print("□ ", end=' ')
                 index += 1
             print()
@@ -91,8 +88,9 @@ class Engine:
         self.tableroVacio = False
             
     def start(self):
-        self.paintTable(self.anchoTablero, self.altoTablero)
+        #self.paintTable(self.anchoTablero, self.altoTablero)
         while self.finalizado != True:
+            self.paintTable()
             if (self.player1 == True):
                 #Primera elección
                 print("\nA continuación sera el turno de Player 1")
@@ -100,13 +98,14 @@ class Engine:
                 print("Recuerda introducir la respuesta en formato 'ancho x altura'. Ejemplo 3x3")
                 self.player1Guess = input('')
                 parts = self.player1Guess.split('x')
-                #Restamos menos uno para ajustarlo al array
+                #Restamos menos uno para ajustarlo al "array" de las tablas
                 guess1_x = int(parts[0]) - 1 
                 guess1_y = int(parts[1]) - 1
                 
+                #Posicion ajustada al "array de printTable()
                 guess1_index = guess1_y * self.anchoTablero + guess1_x
                 
-                # Mostrar tablero con la primera elección
+                #Mostramos el tablero con la primera eleccion
                 for i in range(self.altoTablero):
                     for h in range(self.anchoTablero):
                         current_index = i * self.anchoTablero + h
@@ -116,7 +115,7 @@ class Engine:
                             print("□ ", end=' ')
                     print()
 
-                # Segunda elección
+                #Segunda eleccion
                 print('\nPLAYER 1 - 2º GUESS')
                 print("Recuerda introducir la respuesta en formato 'ancho x altura'. Ejemplo 3x3")
                 self.player1Guess = input('')
@@ -126,7 +125,7 @@ class Engine:
                 
                 guess2_index = guess2_y * self.anchoTablero + guess2_x
                 
-                # Mostrar tablero con ambas elecciones
+                #Mostramos el tabler con las dos posiciones adivinadas
                 for i in range(self.altoTablero):
                     for h in range(self.anchoTablero):
                         current_index = i * self.anchoTablero + h
@@ -135,20 +134,20 @@ class Engine:
                         else:
                             print("□ ", end=' ')
                     print()
-
+            #Cambio de turno
             elif self.player2 == True:
                 #Primera elección
                 print("\nA continuación sera el turno de Player 2")
                 print('\nPLAYER 2 - 1º GUESS')
                 print("Recuerda introducir la respuesta en formato 'ancho x altura'. Ejemplo 3x3")
-                self.player2Guess = input('')  # Corregido: era player1Guess
+                self.player2Guess = input('')
                 parts = self.player2Guess.split('x')
                 guess1_x = int(parts[0]) - 1 
                 guess1_y = int(parts[1]) - 1
                 
                 guess1_index = guess1_y * self.anchoTablero + guess1_x
                 
-                # Mostrar tablero con la primera elección
+                #Mostramos el tablero con la primera eleccion
                 for i in range(self.altoTablero):
                     for h in range(self.anchoTablero):
                         current_index = i * self.anchoTablero + h
@@ -158,17 +157,17 @@ class Engine:
                             print("□ ", end=' ')
                     print()
 
-                # Segunda elección
                 print('\nPLAYER 2 - 2º GUESS')
                 print("Recuerda introducir la respuesta en formato 'ancho x altura'. Ejemplo 3x3")
-                self.player2Guess = input('')  # Corregido: era player1Guess
+                self.player2Guess = input('')
                 parts = self.player2Guess.split('x')
                 guess2_x = int(parts[0]) - 1
                 guess2_y = int(parts[1]) - 1
                 
+                #Posicion ajustada al tablero de printTable()
                 guess2_index = guess2_y * self.anchoTablero + guess2_x
                 
-                # Mostrar tablero con ambas elecciones
+                #Mostramos el tabler con las dos posiciones adivinadas
                 for i in range(self.altoTablero):
                     for h in range(self.anchoTablero):
                         current_index = i * self.anchoTablero + h
@@ -177,24 +176,28 @@ class Engine:
                         else:
                             print("□ ", end=' ')
                     print()
-
+            #Comprobamos las posiciones, si estas son correctas lo añadimos a un array con las posiciones acertadas, donde en paintTable() se printearan los emojis acertados siempre.
             if self.comprobarRespuesta(self.emojiMix[guess1_index][0], self.emojiMix[guess2_index][0]) == True:
                 self.posicionesAcertadas.append(guess1_index)
                 self.posicionesAcertadas.append(guess2_index)
-                self.paintTable(self.anchoTablero, self.altoTablero)  # Mostrar tablero actualizado con las coincidencias
-                self.isFinished()#Veridicamos si el juego ha acabado
+                self.paintTable()  # Mostrar tablero actualizado con las coincidencias
+                self.isFinished()#Verificamos si el juego ha acabado
         
-        #Cuando se sale del whiel(osea el juego ha acabado)
-        print("Game is over.\nResults are: ") #En un futuro, siempre que un jugador acierte agregaremos un punto por cada acertado para 
-        #print("Player1: 2 pairs right")
-        #print("Player2: 2 pairs right")
-        #print("Draw")
+        #Fin del juego
+        self.gameOver();
                 
-    
+    #Funcion encargada de comporobar las posiciones (parejas del array), si estas son correctas devuelve true (osea no cambia el turno del jugador y sigue jugando el que ha acertado)
+    #En caso de fallar, esta funcion se encarga de cambiar el turno y informar de que no hay coincidencia
     def comprobarRespuesta(self, guess1, guess2):
         if guess1 == guess2:
                 print("\nCoincidencia encontrada")
                 self.comporbador = True;
+                #Comprobar el jugador que ha acertado la pareja. Si player 1 es True y ha acertado la secuencia se le sumara un punto
+                if self.player1 == True:
+                    self.scorePlayer1 += 1;
+                elif self.player2 == True:
+                    self.scorePlayer2 += 1;
+                
                 return True;
         elif self.player1 == True:
             print("\nNo hay coincidencia")
@@ -230,3 +233,15 @@ class Engine:
     def isFinished(self):
         if len(self.posicionesAcertadas) == len(self.emojiMix):
             self.finalizado = True;
+
+    def gameOver(self):
+        print("\n\n\n\n\n\n--------Game is over--------\n\nResults are: ")
+        print(f"\nPlayer 1: {self.scorePlayer1} pairs right")
+        print(f"\nPlayer 2: {self.scorePlayer2} pairs right")
+        print("\n----------FINAL SCORE-----------\n")
+        if (self.scorePlayer1 > self.scorePlayer2):
+            print("Player 1 WINS")
+        elif (self.scorePlayer1 < self.scorePlayer2):
+            print("Player 2 WINS")
+        else: 
+            print("DRAW")
