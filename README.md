@@ -19,7 +19,7 @@ Desarrollado para desafiar la memoria visual en cada jugador, este juego clásic
    
 2. **Navega hasta la carpeta del proyecto**:
     ```bash
-    cd consola-memory-game
+    cd Project
     ```
 
 3. **Ejecuta el juego**:
