@@ -14,7 +14,7 @@ Desarrollado para desafiar la memoria visual en cada jugador, este juego clásic
 
 1. **Descarga o clona el repositorio**:
     ```bash
-    git clone https://github.com/tu-usuario/consola-memory-game.git
+    git clone https://github.com/Emanuel-Hosu/consola-memory-game.git
     ```
    
 2. **Navega hasta la carpeta del proyecto**:
