@@ -7,7 +7,7 @@ engine = Engine()
 #Mensaje de bienvenida
 #engine.welcome()
 engine.menu();
-engine.getMenuChoice()
+engine.get_menu_choice()
 
 #Recogemos el input del usuario y hacemos un split, donde en la misma clase de este vamos a crear el tablero
-engine.dataTable()
+engine.data_table()

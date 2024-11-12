@@ -32,6 +32,8 @@ class Engine:
         self.scorePlayer2 = 0;
         self.gameMode = 0
         self.emojisAcertado = [];
+        self.machineDifficult = 0;
+        self.machineMemory = [];
 
     def menu(self):
         user = ""
@@ -62,17 +64,24 @@ class Engine:
             memoria_maquina = "memoria completa"
         """
 
-    def getMenuChoice(self):
+    def get_menu_choice(self):
         while True:
-            try:
-                opcion = int(input("\nSelect a option(1-4): "))
-                if 1 <= opcion <= 4:
-                    self.gameMode = opcion
-                    break
+            opcion = int(input("\nSelect a option(1-4): "))
+            if 1 <= opcion <= 4:
+                self.gameMode = opcion
+                break
+            else:
                 print("Please, select a valid option (1-4)")
-            except ValueError:
-                print("Please, input a valid number")
-            
+    
+    def get_machine_difficulty(self):
+        while True:
+            opcion = int(input("\nSelect a option(1-3): "))
+            if 1 <= opcion <= 3:
+                self.machineDifficulty = opcion
+                break
+            else:
+                print("Please, select a valid option (1-3)")
+
     def start(self):
         while not self.finalizado:
             #PLAYER VS PLAYER
@@ -101,13 +110,20 @@ class Engine:
 
                 # Mostrar tablero con ambos guesses
                 self.show_guess([guess1_index, guess2_index])
-
-            #PLAYER VS MACHINE EASY
+            #PLAYER VS MACHINE EASY -------------------- -------------------- -------------------- -------------------- -------------------- --------------------
             elif self.gameMode == 2:
+                self.difficulty_menu()
+                self.get_menu_choice()
                 if self.player1:
                     current_player = "Player 1"
                 elif self.player2:
-                    current_player = "Machine"
+                    if self.machineDifficult == 1:
+                        current_player = "Machine"
+                    elif self.machineDifficult == 2:
+                        #En get_valid_guest() programamos la inteligencia de las maquinas
+                        current_player = "Inteligent Machine"
+                    else:
+                        current_player = "Super Inteligen Machine"
                 
                 print(f"\n========{current_player} TURN========")
                 self.paint_table()
@@ -200,6 +216,7 @@ class Engine:
                     self.player1 = False
                     self.player2 = True
                 else:
+                    #print("Guess 1 index: ", guess1_index, "\nGuess 2 index: ", guess2_index)
                     self.player2 = False
                     self.player1 = True;
 
@@ -216,9 +233,72 @@ class Engine:
 
         self.game_over(player_names)
 
+    def get_valid_guess(self, player, guess_num):
+        while True:
+            print(f'\n========{player} - {guess_num}º GUESS========\n')
+            #En caso de que sea un Player
+            if player[0] == "P":
+                print("Enter the answer in 'width x height' format (e.g., 3x3):")
+                user_input = input('')
+
+                #Validamos el formato correcto (tiene una 'x' y es de dos partes)
+                if 'x' not in user_input:
+                    print("\nInvalid format. Please use 'width x height' (e.g., 3x3).")
+                    continue
+
+                parts = user_input.split('x')
+                if len(parts) != 2 or not parts[0].isdigit() or not parts[1].isdigit():
+                    print("\nInvalid format. Please use 'width x height' (e.g., 3x3).")
+                    continue
+            
+                #Restamos menos uno para ajustarlo al "array" de las tablas
+                x = int(parts[0]) - 1
+                y = int(parts[1]) - 1
+                index = y * self.anchoTablero + x
+
+                #Nos aseguramos de que la posicion puesta por el usuario no se sale del array.
+                if x < 0 or x >= self.anchoTablero or y < 0 or y >= self.altoTablero:
+                    print("\nPosition out of bounds. Choose a position within the board size.")
+                    continue
+            #En caso de que el guess sea una Machine
+            else:
+                #index ajustado a que no se salga del array, por ejemplo si el tablero es un 2x2 esto es = 4 - 1, osea la maquina solo puede elegir numeros de 0 a 3, para que no se salga del array
+                if self.machineDifficult == 1: #En caso de que la maquina sea "tonta"
+                    index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
+                if self.machineDifficult == 2: #En caso de que la maquina sea inteligente (al final de este metodo se contruye la inteligencia de la maquina)
+                    if len(self.machineMemory) >= 3:
+                        value = 0
+                        while True:
+                            if self.machineMemory[value] == self.machineMemory[-(value + 1)]:
+                                index = self.machineMemory[value]
+                                self.machineMemory.clear() #Refrescamos la memoria de la maquina a 0 otra vez
+                                break
+                            else:
+                                value += 1
+                    else:
+                        index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
+
+                
+                #Lo que hacemos aqui es que nos aseguramos de que la maquina no diga posiciones ya adivinadas o repetri los mismos numeros en guess1 y guess2
+                if guess_num == 2:
+                    while index in self.posicionesAcertadas or index == self.guess1_index:
+                        index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
+                else:
+                    while index in self.posicionesAcertadas:
+                        index = random.randint(0, self.anchoTablero * self.altoTablero - 1)
+
+            if index not in self.posicionesAcertadas:
+                if guess_num == 1:
+                    #Variable global de la clase para guardar el indice correcto
+                    self.guess1_index = index
+                    #En caso de que haya pasado las pruebas el indicie, se añade a la inteligencia de la maquina
+                    if self.gameMode == 2:
+                        self.machineMemory.append(index)
+                return index;
+
     #FUncion que se encarga de recoger los datos del alumno y crear una lista de emojis randoms usando la funcion radnomEmoji
     #Por ultimo esta función llama a printTable que esta se encargara de crear la tabla con lo necesitado
-    def dataTable(self):
+    def data_table(self):
         print("\n===============GAME STARTS===============")
         print("============PLAYER VS PLAYER============")
         print("\nPlease, enter the board size in the format 'width x height'. Example: 5x6")
@@ -274,51 +354,6 @@ class Engine:
         
         self.tableroVacio = False
 
-    def get_valid_guess(self, player, guess_num):
-        while True:
-            print(f'\n========{player} - {guess_num}º GUESS========\n')
-            #En caso de que sea un Player
-            if player[0] == "P":
-                print("Enter the answer in 'width x height' format (e.g., 3x3):")
-                user_input = input('')
-
-                #Validamos el formato correcto (tiene una 'x' y es de dos partes)
-                if 'x' not in user_input:
-                    print("\nInvalid format. Please use 'width x height' (e.g., 3x3).")
-                    continue
-
-                parts = user_input.split('x')
-                if len(parts) != 2 or not parts[0].isdigit() or not parts[1].isdigit():
-                    print("\nInvalid format. Please use 'width x height' (e.g., 3x3).")
-                    continue
-            
-                #Restamos menos uno para ajustarlo al "array" de las tablas
-                x = int(parts[0]) - 1
-                y = int(parts[1]) - 1
-                index = y * self.anchoTablero + x
-
-                #Nos aseguramos de que la posicion puesta por el usuario no se sale del array.
-                if x < 0 or x >= self.anchoTablero or y < 0 or y >= self.altoTablero:
-                    print("\nPosition out of bounds. Choose a position within the board size.")
-                    continue
-            #En caso de que el guess sea una Machine
-            else:
-                #index ajustado a que no se salga del array, por ejemplo si el tablero es un 2x2 esto es = 4 - 1, osea la maquina solo puede elegir numeros de 0 a 3, para que no se salga del array
-                index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
-                #Lo que hacemos aqui es que nos aseguramos de que la maquina no diga posiciones ya adivinadas o repetri los mismos numeros en guess1 y guess2
-                if guess_num == 2:
-                    while index in self.posicionesAcertadas or index == self.guess1_index:
-                        index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
-                else:
-                    while index in self.posicionesAcertadas:
-                        index = random.randint(0, self.anchoTablero * self.altoTablero - 1)
-
-            if index not in self.posicionesAcertadas:
-                if guess_num == 1:
-                    #Variable global de la clase para guardar el indice correcto
-                    self.guess1_index = index
-                return index;
-
     #Funcion encargada de enseñar los emojis que estan en las posiciones acertadas, y los nuevos emojis acertados que entran por parametro
     def show_guess(self, indices):
         for i in range(self.altoTablero):
@@ -334,7 +369,8 @@ class Engine:
     #Funcion encargada de comporobar las posiciones (parejas del array), si estas son correctas devuelve true (osea no cambia el turno del jugador y sigue jugando el que ha acertado)
     #En caso de fallar, esta funcion se encarga de cambiar el turno y informar de que no hay coincidencia
     def find_out_response(self, guess1, guess2):
-        #print(f"Guess 1: {guess1}\nGuess 2: {guess2}\nPosiciones acertadas: {self.posicionesAcertadas}")
+        #guess1 y guess2 son iguales a emojis, por eso tenemos emojisAcertados y solo guardamos un guess1, es como si contara por los dos emojis :>
+        print(f"Guess 1: {guess1}\nGuess 2: {guess2}\nPosiciones acertadas: {self.posicionesAcertadas}")
         if guess1 == guess2 and guess1 not in self.emojisAcertado and guess2 not in self.emojisAcertado:
             print("\n*** MATCH FOUND ***")
             # Comprobar el jugador que ha acertado la pareja. Si player 1 es True y ha acertado la secuencia se le sumara un punto
