@@ -1,5 +1,7 @@
 lista = [1, 2, 3, 4, 5, 6]
 lista2 = [1, 2, 3, 4, 5]
+mitad = len(lista2) // 2
+print(mitad)
 
 guardar = lista2[0]
 
@@ -11,10 +13,16 @@ guardar = lista2[0]
         else:
             print("Valor no encontrado")"""
 index = 0
+negative = -1
+encontrado = False
 
-while True:
-    if lista2[index] == lista2[-(index + 1)]:
-        print("Valor encontrado ", lista2[index])
-        break
-    else:
-        index += 1
+while encontrado == False:
+    if index < mitad:
+        for index in range(mitad):
+            if lista2[index] == lista2[negative]:
+                print("Valor encontrado", lista2[index])
+                encontrado = True
+                break
+        else:
+            negative = -1
+            index += 1

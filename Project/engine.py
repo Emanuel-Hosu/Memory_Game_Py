@@ -77,7 +77,7 @@ class Engine:
         while True:
             opcion = int(input("\nSelect a option(1-3): "))
             if 1 <= opcion <= 3:
-                self.machineDifficulty = opcion
+                self.machineDifficult = opcion
                 break
             else:
                 print("Please, select a valid option (1-3)")
@@ -112,8 +112,9 @@ class Engine:
                 self.show_guess([guess1_index, guess2_index])
             #PLAYER VS MACHINE EASY -------------------- -------------------- -------------------- -------------------- -------------------- --------------------
             elif self.gameMode == 2:
-                self.difficulty_menu()
-                self.get_menu_choice()
+                if self.machineDifficult == 0:
+                    self.difficulty_menu()
+                    self.get_machine_difficulty()
                 if self.player1:
                     current_player = "Player 1"
                 elif self.player2:
@@ -266,18 +267,28 @@ class Engine:
                 if self.machineDifficult == 1: #En caso de que la maquina sea "tonta"
                     index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
                 if self.machineDifficult == 2: #En caso de que la maquina sea inteligente (al final de este metodo se contruye la inteligencia de la maquina)
+                    encontrado = False;
                     if len(self.machineMemory) >= 3:
                         value = 0
-                        while True:
-                            if self.machineMemory[value] == self.machineMemory[-(value + 1)]:
-                                index = self.machineMemory[value]
-                                self.machineMemory.clear() #Refrescamos la memoria de la maquina a 0 otra vez
-                                break
-                            else:
-                                value += 1
+                        negativeValue = -1;
+                        mitad = len(self.machineMemory) // 2;
+
+                        while encontrado == False:
+                            if value < mitad:
+                                for value in range(mitad):
+                                    print(f"280: {self.emojiMix[self.machineMemory[value]][1]}")
+                                    if self.machineMemory[value] == self.machineMemory[negativeValue]:
+                                        index = self.emojiMix[self.machineMemory[value]][0];
+                                        self.machineMemory.clear() #Refrescamos la memoria de la maquina a 0 otra vez
+                                        break
+                                    else:
+                                        negativeValue = -1
+                                        value += 1
+                            break;#Si despues de eso sigue sin encontrarlo.
+                    elif encontrado == False:
+                        index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
                     else:
                         index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
-
                 
                 #Lo que hacemos aqui es que nos aseguramos de que la maquina no diga posiciones ya adivinadas o repetri los mismos numeros en guess1 y guess2
                 if guess_num == 2:
@@ -293,7 +304,7 @@ class Engine:
                     self.guess1_index = index
                     #En caso de que haya pasado las pruebas el indicie, se añade a la inteligencia de la maquina
                     if self.gameMode == 2:
-                        self.machineMemory.append(index)
+                        self.machineMemory.append(index) #CAMBIAR ESTO, Y HAY QUE JUGAR CON EL EMOJI MIX, RECUERDALO EMI
                 return index;
 
     #FUncion que se encarga de recoger los datos del alumno y crear una lista de emojis randoms usando la funcion radnomEmoji
