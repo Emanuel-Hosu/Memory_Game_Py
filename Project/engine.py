@@ -266,7 +266,7 @@ class Engine:
             #En caso de que el guess sea una Machine
             else:
                 #index ajustado a que no se salga del array, por ejemplo si el tablero es un 2x2 esto es = 4 - 1, osea la maquina solo puede elegir numeros de 0 a 3, para que no se salga del array
-                if self.machineDifficult == 1: #En caso de que la maquina sea "tonta"
+                if self.machineDifficult == 1 or player[0] == "M": #En caso de que la maquina sea "tonta"
                     index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
                 
                 if self.machineDifficult == 2: #En caso de que la maquina sea inteligente (al final de este metodo se contruye la inteligencia de la maquina)
