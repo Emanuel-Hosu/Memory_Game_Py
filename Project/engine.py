@@ -151,7 +151,7 @@ class Engine:
                         guess1_index = self.get_valid_guess(current_player, 1)
 
                         #Si el guess1 de la maquina no esta en posiciones acertadas, entonces salimos del while y pintamos la seleccin correcta
-                        if guess1_index not in self.posicionesAcertadas:
+                        if guess1_index not in self.posicionesAcertadas or self.gameMode == 3: #Pasamos de todo si la maquina es super inteligente
                             break
                         else:
                             print("Cannot select the same position twice, please choose again.")
@@ -268,6 +268,7 @@ class Engine:
                 #index ajustado a que no se salga del array, por ejemplo si el tablero es un 2x2 esto es = 4 - 1, osea la maquina solo puede elegir numeros de 0 a 3, para que no se salga del array
                 if self.machineDifficult == 1: #En caso de que la maquina sea "tonta"
                     index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
+                
                 if self.machineDifficult == 2: #En caso de que la maquina sea inteligente (al final de este metodo se contruye la inteligencia de la maquina)
                     encontrado = False;
                     index = 0
@@ -307,27 +308,56 @@ class Engine:
                                 if abs(negativeValue) >= mitad:
                                     break
                                 negativeValue -= 1
-                                value = 0   
+                                value = 0  
+                                
 
                     elif encontrado == False:
                         index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
                     else:
                         index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
                 
+                if self.machineDifficult == 3: #Tercera opcion es la maquina super inteligente.
+                    if len(self.machineMemory) == 0:
+                        self.machineMemory = self.emojiMix.copy();#Evitamos que apunten al mismo espacio de memoria
+                    
+                    print("ID emoji: ", self.machineMemory[0], "Indice: ", self.machineMemory.index(self.machineMemory[0]))
+                    value = 1
+                    encontrado = False;
+
+                    while not encontrado:
+                        if self.machineMemory.index(self.machineMemory[0]) == self.machineMemory.index(self.machineMemory[value]):
+                            if self.machineGuess == False:
+                                print("Index es: ", self.emojiMix.index(self.machineMemory[0]))
+                                index = self.emojiMix.index(self.machineMemory[0]);
+                                encontrado = True;
+                                self.machineGuess = True
+                            else:
+                                primer_indice = self.emojiMix.index(self.machineMemory[0])
+                                index = self.emojiMix.index(self.machineMemory[value], primer_indice + 1)
+                                print("Maquina super inteligente elige el index: ", index)
+                                encontrado = True
+                                self.machineGuess = False
+                                print("Eliminando valor ", self.machineMemory[value], " y valor ", self.machineMemory[0])
+                                del self.machineMemory[value]
+                                del self.machineMemory[0]
+                        else:
+                            value += 1
+                             
+                
                 #Lo que hacemos aqui es que nos aseguramos de que la maquina no diga posiciones ya adivinadas o repetri los mismos numeros en guess1 y guess2
                 if guess_num == 2:
-                    if self.gameMode == 1:
+                    if self.machineDifficult == 1:
                         while index in self.posicionesAcertadas or index == self.guess1_index:
                             index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
-                    if self.gameMode == 2 and encontrado == False: #Evitamos que la maquina repita los numero de slef.machineMemory: #Evitamos que la maquina repita los numero de slef.machineMemory
+                    if self.machineDifficult == 2 and encontrado == False: #Evitamos que la maquina repita los numero de slef.machineMemory: #Evitamos que la maquina repita los numero de slef.machineMemory
                         self.machineGuess = False
                         while index in self.posicionesAcertadas or index == self.guess1_index or index in self.machineMemory:
                             index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
                 else:
-                    if self.gameMode == 1:
+                    if self.machineDifficult == 1:
                         while index in self.posicionesAcertadas:
                             index = random.randint(0, self.anchoTablero * self.altoTablero - 1)
-                    if self.gameMode == 2 and encontrado == False: #Evitamos que la maquina repita los numero de slef.machineMemory
+                    if self.machineDifficult == 2 and encontrado == False: #Evitamos que la maquina repita los numero de slef.machineMemory
                         self.machineGuess = True #Cambio de turno despues de que machin haya dado una respuesta
                         while index in self.posicionesAcertadas or index in self.machineMemory or index in self.machineMemory:
                             index = random.randint(0, self.altoTablero * self.anchoTablero - 1);
@@ -337,11 +367,13 @@ class Engine:
                     #Variable global de la clase para guardar el indice correcto
                     self.guess1_index = index
                     #En caso de que haya pasado las pruebas el indicie, se añade a la inteligencia de la maquina
-                if self.gameMode == 2:
+                if self.machineDifficult == 2:
                     if index not in self.machineMemory:
                         self.machineMemory.append(index) #CAMBIAR ESTO, Y HAY QUE JUGAR CON EL EMOJI MIX, RECUERDALO EMI
                 return index;
-
+            if self.machineDifficult == 3:
+                return index
+            
     #FUncion que se encarga de recoger los datos del alumno y crear una lista de emojis randoms usando la funcion radnomEmoji
     #Por ultimo esta función llama a printTable que esta se encargara de crear la tabla con lo necesitado
     def data_table(self):
