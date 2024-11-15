@@ -23,8 +23,8 @@ Emanuel Hosu
     - [Prueba 4: Modo Máquina vs Máquina](#prueba-4:-modo-máquina-vs-máquina)
     - [Prueba 5: Validación de Entrada](#prueba-5:-validación-de-entrada)
     - [Prueba 6: Niveles de Dificultad - Fácil](#prueba-6:-niveles-de-dificultad---fácil)
-    - [Prueba 6: Niveles de Dificultad - Intermedio](#prueba-6:-niveles-de-dificultad---intermedio)
-    - [Prueba 6: Niveles de Dificultad - Difícil](#prueba-6:-niveles-de-dificultad---difícil)
+    - [Prueba 7: Niveles de Dificultad - Intermedio](#prueba-7:-niveles-de-dificultad---intermedio)
+    - [Prueba 8: Niveles de Dificultad - Difícil](#prueba-8:-niveles-de-dificultad---difícil)
   - [Criterios de Evaluación Cumplidos](#criterios-de-evaluación-cumplidos)
 
 # Documentación del Juego de Memoria
@@ -1008,7 +1008,7 @@ Player 1 WINS
 Player 1 TOTAL SCORE: 6
 ```
 
-### Prueba 6: Niveles de Dificultad - Intermedio
+### Prueba 7: Niveles de Dificultad - Intermedio
 ```python
 ========Welcome to Memory========
 
@@ -1180,7 +1180,7 @@ Machine WINS
 Machine TOTAL SCORE: 6
 ```
 
-### Prueba 6: Niveles de Dificultad - Difícil
+### Prueba 8: Niveles de Dificultad - Difícil
 ```python
 ========Welcome to Memory========
 
