@@ -1,5 +1,34 @@
 # Documentación del Juego de Memoria
 
+## Autor
+Emanuel Hosu
+
+---
+
+## Índice
+
+- [Documentación del Juego de Memoria](#documentación-del-juego-de-memoria)
+  - [Descripción General](#descripción-general)
+  - [Estructura del Código](#estructura-del-código)
+    - [Clase Engine](#clase-engine)
+      - [Atributos Principales](#atributos-principales)
+      - [Métodos Principales](#métodos-principales)
+  - [Características Avanzadas](#características-avanzadas)
+    - [Inteligencia Artificial](#inteligencia-artificial)
+    - [Validación de Entrada](#validación-de-entrada)
+  - [Esquemas de Prueba](#esquemas-de-prueba)
+    - [Prueba 1: Creación del Tablero](#prueba-1:-creación-del-tablero)
+    - [Prueba 2: Modo Jugador vs Jugador](#prueba-2:-modo-jugador-vs-jugador)
+    - [Prueba 3: Modo Jugador vs Máquina](#prueba-3:-modo-jugador-vs-máquina)
+    - [Prueba 4: Modo Máquina vs Máquina](#prueba-4:-modo-máquina-vs-máquina)
+    - [Prueba 5: Validación de Entrada](#prueba-5:-validación-de-entrada)
+    - [Prueba 6: Niveles de Dificultad - Fácil](#prueba-6:-niveles-de-dificultad---fácil)
+    - [Prueba 6: Niveles de Dificultad - Intermedio](#prueba-6:-niveles-de-dificultad---intermedio)
+    - [Prueba 6: Niveles de Dificultad - Difícil](#prueba-6:-niveles-de-dificultad---difícil)
+  - [Criterios de Evaluación Cumplidos](#criterios-de-evaluación-cumplidos)
+
+# Documentación del Juego de Memoria
+
 ## Descripción General
 Este proyecto implementa un juego de memoria con emojis que soporta tres modos de juego diferentes:
 - Jugador vs Jugador
