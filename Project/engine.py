@@ -1,6 +1,8 @@
 # engine.py
 import random
 
+"""La clase Engine es el núcleo del juego de memoria en el que dos jugadores o máquinas intentan encontrar pares de emojis ocultos en un tablero. A continuación, se explica el propósito y 
+    funcionamiento de cada método y atributo importante en esta clase."""
 class Engine:
     def __init__(self):
         self.emoji = {
@@ -20,22 +22,23 @@ class Engine:
             '14': '🍑',
             '15': '🍏'
         }
-        self.emojiMix = []
+        self.emojiMix = [] #Array encargado de generar las parejas de emoji, tambien los guardad e forma random.
         self.finalizado = False
-        self.player1 = True;
-        self.player2 = False;
+        self.player1 = True; #Variable booleana que se encarga de ir cambiando, en caso de que sea Ture, es el turno del player que tenga la variable true
+        self.player2 = False; #Lo mismo que el comentario de arriba
         self.anchoTablero = 0;
         self.altoTablero = 0;
         self.tableroVacio = True; #este pasas a ser false en paint table al crear el tablero
-        self.posicionesAcertadas = [];
+        self.posicionesAcertadas = []; #Array que guarda las posiciones acertadas 
         self.scorePlayer1 = 0;
         self.scorePlayer2 = 0;
         self.gameMode = 0
-        self.emojisAcertado = [];
-        self.machineDifficult = 0;
-        self.machineMemory = [];
-        self.machineGuess = False;
+        self.emojisAcertado = []; #Array que guarda los emojis acertados
+        self.machineDifficult = 0; 
+        self.machineMemory = []; #Array que dependiendo el modo de la maquina guarda una copia de el self.emojiMix en caso de que sea self.gameMode 3 y en caso de que sea el 2, tiene una memoria volátil que cuando esta maquina acierta y hay un MATCH, esta borra la memoria
+        self.machineGuess = False; #True en caso de que la maquina vaya a hacer el guess 2, y False en caso de que la maquina vaya a hacer el guess 1
 
+    """Funcion encargada de enseñar el menu pirncipal"""
     def menu(self):
         user = ""
         if self.tableroVacio == True:
@@ -46,7 +49,8 @@ class Engine:
             print("\n2. Play - Player vs Machine")
             print("\n3. Play - Machine 1 vs Machine 2")
             print("\n4. Exit")
-    
+
+    """Funcion encargada de enseñar el menu de dificultad en caso de que en el menu principal se haya elegido: Player vs Machine"""
     def difficulty_menu(self):
         user = ""
         if self.tableroVacio == True:
@@ -56,15 +60,8 @@ class Engine:
             print("\n2. Medium")
             print("\n3. Hard")
             print("\n4. Exit")
-        """
-        if nivel_dificultad == 1:
-            memoria_maquina = "sin memoria"
-        elif nivel_dificultad == 2:
-            memoria_maquina = "memoria temporal"
-        elif nivel_dificultad == 3:
-            memoria_maquina = "memoria completa"
-        """
 
+    """Menu encargado de recoger los datos y evitar el fallo de la funcion del menu principal"""
     def get_menu_choice(self):
         while True:
             opcion = int(input("\nSelect a option(1-4): "))
@@ -73,7 +70,8 @@ class Engine:
                 break
             else:
                 print("Please, select a valid option (1-4)")
-    
+
+    """Menu encargado de recoger los datos y evitar el fallo de la funcion de difficulty_menu()"""
     def get_machine_difficulty(self):
         while True:
             opcion = int(input("\nSelect a option(1-3): "))
@@ -83,8 +81,12 @@ class Engine:
             else:
                 print("Please, select a valid option (1-3)")
 
+    """
+    Start()
+    Controla el flujo principal del juego, incluyendo los turnos y las interacciones 
+    de los jugadores o máquinas, dependiendo del modo de juego seleccionado.
+    """
     def start(self):
-        print(self.emojiMix)
         while not self.finalizado:
             #PLAYER VS PLAYER
             if self.gameMode == 1:
@@ -112,7 +114,7 @@ class Engine:
 
                 # Mostrar tablero con ambos guesses
                 self.show_guess([guess1_index, guess2_index])
-            #PLAYER VS MACHINE EASY -------------------- -------------------- -------------------- -------------------- -------------------- --------------------
+            #PLAYER VS MACHINE EASY
             elif self.gameMode == 2:
                 if self.machineDifficult == 0:
                     self.difficulty_menu()
@@ -235,7 +237,9 @@ class Engine:
                 player_names = ["Player 1", "Player 2"]
 
         self.game_over(player_names)
-
+    """get_valid_guess()
+    Funcion encargada de obtener y validar las posiciones de los jugadores y máquinas, dependiendo del modo de juego seleccionado.
+    """
     def get_valid_guess(self, player, guess_num):
         while True:
             print(f'\n========{player} - {guess_num}º GUESS========\n')
@@ -278,8 +282,8 @@ class Engine:
                         mitad = len(self.machineMemory) // 2
                         while encontrado == False:
                             while value < mitad:
-                                print(f"280 Valor positivo: {self.emojiMix[self.machineMemory[value]][0]}")
-                                print(f"280 Valor negativo: {self.emojiMix[self.machineMemory[negativeValue]][0]}")
+                                #print(f"280 Valor positivo: {self.emojiMix[self.machineMemory[value]][0]}")
+                                #print(f"280 Valor negativo: {self.emojiMix[self.machineMemory[negativeValue]][0]}")
                                 if self.emojiMix[self.machineMemory[value]][0] == self.emojiMix[self.machineMemory[negativeValue]][0]:
                                     if self.machineGuess == False:
                                         index = self.machineMemory[value]
@@ -288,19 +292,19 @@ class Engine:
                                         index = self.machineMemory[negativeValue]
                                         if index == self.guess1_index:#Evitamos en caso de que la maquina acierte el primer valor quen o repita el segundo
                                             index = self.machineMemory[value]
-                                        #self.machineMemory.clear() #Refrescamos la memoria de la maquina a 0 otra vez
                                     #Y el guess 2 deberia ser el negativo
                                     encontrado = True
                                     break
                                 if len(self.machineMemory) % 2 != 0:
                                     index = 0
                                     valor_medio = self.machineMemory[mitad] // 2
-                                    print("295 - Machine memory:", self.machineMemory)
-                                    print("296 - Length of emojiMix:", len(self.emojiMix))
                                     #if (0 <= self.machineMemory[value] < len(self.emojiMix) and 0 <= self.machineMemory[valor_medio] < len(self.emojiMix) and 0 <= self.machineMemory[negativeValue] < len(self.emojiMix)):
-                                    if (self.emojiMix[self.machineMemory[value]][0] == self.emojiMix[self.machineMemory[valor_medio]][0] or self.emojiMix[self.machineMemory[negativeValue]][0] == self.emojiMix[self.machineMemory[valor_medio]][0]):
+                                    """print("Indices medios value: ", self.emojiMix[self.machineMemory[value]][0], 
+                                            "\nIndices medios valor_medio: ", self.emojiMix[self.machineMemory[valor_medio]][0], 
+                                            "\nIndices medios negativo: ", self.emojiMix[self.machineMemory[negativeValue]][0])"""
+                                    if (self.emojiMix[self.machineMemory[value]][0] == self.emojiMix[self.machineMemory[valor_medio]][0] or 
+                                        self.emojiMix[self.machineMemory[negativeValue]][0] == self.emojiMix[self.machineMemory[valor_medio]][0]): #ayuda
                                         index = self.machineMemory[mitad]
-                                        #self.machineMemory.clear() #Refrescamos la memoria de la maquina a 0 otra vez
                                         encontrado = True
                                         break
                                 value += 1
@@ -320,24 +324,24 @@ class Engine:
                     if len(self.machineMemory) == 0:
                         self.machineMemory = self.emojiMix.copy();#Evitamos que apunten al mismo espacio de memoria
                     
-                    print("ID emoji: ", self.machineMemory[0], "Indice: ", self.machineMemory.index(self.machineMemory[0]))
+                    #print("ID emoji: ", self.machineMemory[0], "Indice: ", self.machineMemory.index(self.machineMemory[0]))
                     value = 1
                     encontrado = False;
 
                     while not encontrado:
                         if self.machineMemory.index(self.machineMemory[0]) == self.machineMemory.index(self.machineMemory[value]):
                             if self.machineGuess == False:
-                                print("Index es: ", self.emojiMix.index(self.machineMemory[0]))
+                                #print("Index es: ", self.emojiMix.index(self.machineMemory[0]))
                                 index = self.emojiMix.index(self.machineMemory[0]);
                                 encontrado = True;
                                 self.machineGuess = True
                             else:
                                 primer_indice = self.emojiMix.index(self.machineMemory[0])
                                 index = self.emojiMix.index(self.machineMemory[value], primer_indice + 1)
-                                print("Maquina super inteligente elige el index: ", index)
+                                #print("Maquina super inteligente elige el index: ", index)
                                 encontrado = True
                                 self.machineGuess = False
-                                print("Eliminando valor ", self.machineMemory[value], " y valor ", self.machineMemory[0])
+                                #print("Eliminando valor ", self.machineMemory[value], " y valor ", self.machineMemory[0])
                                 del self.machineMemory[value]
                                 del self.machineMemory[0]
                         else:
@@ -374,8 +378,11 @@ class Engine:
             if self.machineDifficult == 3:
                 return index
             
-    #FUncion que se encarga de recoger los datos del alumno y crear una lista de emojis randoms usando la funcion radnomEmoji
-    #Por ultimo esta función llama a printTable que esta se encargara de crear la tabla con lo necesitado
+    """
+    data_table()
+    Funcion que se encarga de recoger los datos del alumno y crear una lista de emojis randoms usando la funcion radnomEmoji
+    Por ultimo esta función llama a printTable que esta se encargara de crear la tabla con lo necesitado
+    """
     def data_table(self):
         print("\n===============GAME STARTS===============")
         print("============PLAYER VS PLAYER============")
@@ -412,8 +419,11 @@ class Engine:
         self.start()
 
        
-    #Funcion que se encarga de pintar el tablero, tambien cuadno hay una pareja acertada, que esta se comprueba en el metodo find_out_response(), 
-    #este se encarga de printear las parejas acertadas
+    """
+    paint_table()
+    Funcion que se encarga de pintar el tablero, tambien cuadno hay una pareja acertada, que esta se comprueba en el metodo find_out_response(), 
+    este se encarga de printear las parejas acertadas
+    """
     def paint_table(self):
         index = 0
 
@@ -432,7 +442,10 @@ class Engine:
         
         self.tableroVacio = False
 
-    #Funcion encargada de enseñar los emojis que estan en las posiciones acertadas, y los nuevos emojis acertados que entran por parametro
+    """
+    show_guess()
+    Funcion encargada de enseñar los emojis que estan en las posiciones acertadas, y los nuevos emojis acertados que entran por parametro
+    """
     def show_guess(self, indices):
         for i in range(self.altoTablero):
             for h in range(self.anchoTablero):
@@ -444,11 +457,14 @@ class Engine:
             print()
 
                 
-    #Funcion encargada de comporobar las posiciones (parejas del array), si estas son correctas devuelve true (osea no cambia el turno del jugador y sigue jugando el que ha acertado)
-    #En caso de fallar, esta funcion se encarga de cambiar el turno y informar de que no hay coincidencia
+    """
+    find_out_response()
+    Funcion encargada de comporobar las posiciones (parejas del array), si estas son correctas devuelve true (osea no cambia el turno del jugador y sigue jugando el que ha acertado)
+    En caso de fallar, esta funcion se encarga de cambiar el turno y informar de que no hay coincidencia
+    """
     def find_out_response(self, guess1, guess2):
         #guess1 y guess2 son iguales a emojis, por eso tenemos emojisAcertados y solo guardamos un guess1, es como si contara por los dos emojis :>
-        print(f"Guess 1: {guess1}\nGuess 2: {guess2}\nPosiciones acertadas: {self.posicionesAcertadas}")
+        #print(f"Guess 1: {guess1}\nGuess 2: {guess2}\nPosiciones acertadas: {self.posicionesAcertadas}")
         if guess1 == guess2 and guess1 not in self.emojisAcertado and guess2 not in self.emojisAcertado:
             print("\n*** MATCH FOUND ***")
             if self.machineGuess == True:
@@ -468,9 +484,12 @@ class Engine:
             print("\n**+ NOT MATCH ***")
             return False
  
-    #Ggenera un emjoji randome dpendiendo del resultado que ha introducido el usuario / 2 por ejemplo si el tablero es
-    #5x6 este es un 30, entonces lo dividimos entre 2 y el resultado es el numero de emojis que vamos a usar. Este
-    #ES DIVIDIDO EN EL METODO DATA TABLE.
+    """
+    random_emoji()
+    Genera un emjoji randome dpendiendo del resultado que ha introducido el usuario / 2 por ejemplo si el tablero es
+    5x6 este es un 30, entonces lo dividimos entre 2 y el resultado es el numero de emojis que vamos a usar. Este
+    ES DIVIDIDO EN EL METODO DATA TABLE.
+    """
     def random_emoji(self, number):
         pair1 = []
         pair2 = []
@@ -490,7 +509,10 @@ class Engine:
         if len(self.posicionesAcertadas) == len(self.emojiMix):
             self.finalizado = True;
 
-    #Funcion encargada de imprimir el score del juego
+    """
+    game_over()
+    Funcion encargada de imprimir el score del juego
+    """
     def game_over(self, players):
         print("\n\n\n\n========GAME IS OVER========\n\nResults are: ")
         print(f"\n{players[0]}: has matched {self.scorePlayer1} pairs - Total Score: {self.scorePlayer1 * 2}")
